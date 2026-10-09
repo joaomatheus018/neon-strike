@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Neon Strike - Dual Skill Edition</title>
+    <link rel="stylesheet" href="CSS/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- HUD DA PARTIDA -->
+        <div id="ui" class="hidden">
+            <div class="stat-box">
+                <span>HP:</span>
+                <div id="health-bar"><div id="health-fill"></div></div>
+            </div>
+            <div class="stat-box">
+                <span>PONTOS: <strong id="score">0</strong></span>
+            </div>
+            <div class="stat-box">
+                <span>PRÓX. UPGRADE: <strong id="next-upg-display" style="color: #00f0ff;">100 pts</strong></span>
+            </div>
+            <div class="stat-box">
+                <span>MOEDAS: <strong id="game-coins" class="coin-text">0 🪙</strong></span>
+            </div>
+            <div class="stat-box">
+                <span>ARMA (TAB): <strong id="weapon-name">Pistola</strong></span>
+                <span id="ammo-display">∞</span>
+            </div>
+            <div class="stat-box">
+                <span>HERÓI (Q): <strong id="hero-ability-display" style="color: #ff0055;">PRONTO</strong></span>
+            </div>
+            <div class="stat-box">
+                <span>ATIVA 1 (E): <strong id="active-skill-1-display" style="color: #00f0ff;">VAZIO</strong></span>
+            </div>
+            <div class="stat-box">
+                <span>ATIVA 2 (R): <strong id="active-skill-2-display" style="color: #ff00aa;">VAZIO</strong></span>
+            </div>
+        </div>
+
+        <!-- BARRA DE VIDA DO BOSS -->
+        <div id="boss-hud" class="hidden">
+            <div id="boss-label">⚠️ CHEFÃO NEON SURGIU! ⚠️</div>
+            <div id="boss-health-bar"><div id="boss-health-fill"></div></div>
+        </div>
+
+        <!-- TELA DE LOGIN -->
+        <div id="login-modal" class="overlay">
+            <h1 class="logo">NEON <span>STRIKE</span></h1>
+            <p class="subtitle">HEROES & BOSSES</p>
+
+            <div class="form-group">
+                <input type="text" id="login-user" placeholder="Nome de Usuário" maxlength="12">
+                <input type="password" id="login-pass" placeholder="Senha">
+            </div>
+
+            <div class="lobby-buttons">
+                <button id="btn-login" class="btn btn-primary">ENTRAR</button>
+                <button id="btn-register" class="btn">CRIAR CONTA</button>
+            </div>
+            <p id="auth-msg" class="auth-message"></p>
+        </div>
+
+        <!-- LOBBY PRINCIPAL -->
+        <div id="lobby-menu" class="overlay hidden">
+            <h1 class="logo">NEON <span>STRIKE</span></h1>
+            <p class="subtitle">BEM-VINDO, <span id="player-display-name">JOGADOR</span>!</p>
+            
+            <div class="coins-display">Sua Carteira: <span id="lobby-coins" class="coin-text">0 🪙</span></div>
+
+            <div class="lobby-buttons">
+                <button id="start-game-btn" class="btn btn-primary">🎮 JOGAR AGORA</button>
+                <button id="open-skins-btn" class="btn">🦸 SKINS DE HERÓIS</button>
+                <button id="open-shop-btn" class="btn">🔫 ARMAS & COMPRAS</button>
+                <button id="open-info-btn" class="btn">📘 GUIA DE HABILIDADES</button>
+                <button id="open-rank-btn" class="btn">🏆 CLASSIFICAÇÃO</button>
+                <button id="logout-btn" class="btn btn-danger">SAIR DA CONTA</button>
+            </div>
+        </div>
+
+        <!-- LOJA DE SKINS -->
+        <div id="skins-modal" class="overlay hidden">
+            <h2>SKINS DE HERÓIS</h2>
+            <div id="skins-container" class="shop-grid"></div>
+            <button id="close-skins-btn" class="btn btn-secondary">VOLTAR</button>
+        </div>
+
+        <!-- LOJA DE ARMAS -->
+        <div id="shop-modal" class="overlay hidden">
+            <h2>LOJA DE ARMAS</h2>
+            <div id="shop-container" class="shop-grid"></div>
+            <button id="close-shop-btn" class="btn btn-secondary">VOLTAR</button>
+        </div>
+
+        <!-- MODAL DE INFORMAÇÕES DE HABILIDADES -->
+        <div id="info-modal" class="overlay hidden">
+            <h2>📘 GUIA DE HABILIDADES</h2>
+            <div class="info-scroll-container">
+                <div class="info-section">
+                    <h3 style="color: #ff00aa;">⚡ HABILIDADES ATIVAS (TECLAS E / R)</h3>
+                    <p style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 8px;">
+                        Você pode equipar até 2 ativas por partida. Cooldown: 10 segundos.
+                    </p>
+                    <ul class="info-list">
+                        <li><strong>🌀 Teleporte:</strong> Teleporta o personagem instantaneamente para a frente na direção em que está andando.</li>
+                        <li><strong>💣 Bomba de Tiros:</strong> Dispara uma explosão radial lançando tiros em 360° para todos os lados.</li>
+                        <li><strong>🌪️ Tornado de Tiros:</strong> O personagem gira em alta velocidade por 5 segundos atirando continuamente.</li>
+                        <li><strong>❓ Invisível & Confuso:</strong> Fica invisível por 5 segundos; inimigos perdem o alvo e ficam confusos (?).</li>
+                    </ul>
+                </div>
+
+                <div class="info-section" style="margin-top: 12px;">
+                    <h3 style="color: #00f0ff;">🛡️ HABILIDADES PASSIVAS (MÁX. 10)</h3>
+                    <p style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 8px;">
+                        Acumule até 10 passivas durante cada partida ao subir de nível.
+                    </p>
+                    <ul class="info-list">
+                        <li><strong>⚡ Tiro Rápido:</strong> Aumenta em +30% a velocidade de disparo da sua arma.</li>
+                        <li><strong>💥 Super Carga:</strong> Aumenta em +30% o dano de todos os seus projéteis.</li>
+                        <li><strong>👟 Agilidade:</strong> Aumenta em +20% a velocidade de movimento do herói.</li>
+                        <li><strong>🔫 Disparo Duplo:</strong> Adiciona +1 projétil extra a cada tiro disparado.</li>
+                        <li><strong>❤️ Cura Total:</strong> Recupera instantaneamente 50 pontos de vida (HP).</li>
+                    </ul>
+                </div>
+
+                <div class="info-section" style="margin-top: 12px;">
+                    <h3 style="color: #ffd700;">🦸 PONTOS DE ATALHO</h3>
+                    <ul class="info-list">
+                        <li><strong>Tecla Q:</strong> Ativa o especial da Skin equipada.</li>
+                        <li><strong>Teclas 1 a 5:</strong> Exclusivo da skin <i>Hacker Supremo</i> para usar todas as habilidades de heróis.</li>
+                        <li><strong>Tecla TAB:</strong> Troca entre as armas compradas na loja.</li>
+                    </ul>
+                </div>
+            </div>
+            <button id="close-info-btn" class="btn btn-secondary">VOLTAR</button>
+        </div>
+
+        <!-- RANKING -->
+        <div id="rank-modal" class="overlay hidden">
+            <h2>🏆 CLASSIFICAÇÃO GERAL</h2>
+            <div id="rank-list" class="rank-container"></div>
+            <button id="close-rank-btn" class="btn btn-secondary">VOLTAR</button>
+        </div>
+
+        <!-- MODAL DE UPGRADE NA PARTIDA -->
+        <div id="upgrade-modal" class="overlay hidden">
+            <h2>EVOLUÇÃO DE PARTIDA</h2>
+            <p id="passives-count-label">Passivas: 0/10 | Ativas: 0/2</p>
+            <div id="cards-container"></div>
+        </div>
+
+        <!-- TELA DE GAME OVER -->
+        <div id="game-over" class="overlay hidden">
+            <h1 class="danger-text">FIM DE JOGO</h1>
+            <p>Pontuação: <span id="final-score">0</span></p>
+            <p>Moedas Ganhas: <span id="earned-coins" class="coin-text">0 🪙</span></p>
+            <button id="lobby-return-btn" class="btn btn-primary">VOLTAR AO LOBBY</button>
+        </div>
+
+        <!-- CANVAS -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- CONTROLES MOBILE -->
+        <div id="touch-controls">
+            <div id="move-joystick" class="joystick-base">
+                <div id="move-stick" class="joystick-stick"></div>
+            </div>
+            <div id="fire-btn">🔥</div>
+            <div id="ability-btn">⚡</div>
+            <div id="active-skill-1-btn">💥</div>
+            <div id="active-skill-2-btn">🚀</div>
+            <div id="switch-btn">🔄</div>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

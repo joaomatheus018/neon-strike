@@ -1,0 +1,465 @@
+/* CONFIGURAÇÕES GERAIS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #05060a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, #0e1322 0%, #030407 100%);
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* HUD DA PARTIDA */
+#ui {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 10;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.stat-box {
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    padding: 6px 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+}
+
+#health-bar {
+    width: 80px;
+    height: 10px;
+    background: #222;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#health-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff0055, #ff5500);
+}
+
+.coin-text {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+
+/* HUD DO BOSS */
+#boss-hud {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 450px;
+    text-align: center;
+    z-index: 10;
+    pointer-events: none;
+}
+
+#boss-label {
+    color: #ff0055;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-shadow: 0 0 10px #ff0055;
+    margin-bottom: 4px;
+}
+
+#boss-health-bar {
+    width: 100%;
+    height: 16px;
+    background: rgba(0,0,0,0.8);
+    border: 2px solid #ff0055;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+}
+
+#boss-health-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff0055, #ff00aa);
+    transition: width 0.1s linear;
+}
+
+
+/* OVERLAYS E LOBBY */
+.overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(10, 14, 26, 0.96);
+    border: 2px solid #00f0ff;
+    padding: 22px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.3);
+    z-index: 20;
+    width: 90%;
+    max-width: 540px;
+}
+
+.logo {
+    font-size: 2.2rem;
+    color: #fff;
+    letter-spacing: 2px;
+}
+
+.logo span {
+    color: #00f0ff;
+    text-shadow: 0 0 15px #00f0ff;
+}
+
+.subtitle {
+    color: #ff0055;
+    letter-spacing: 2px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+}
+
+.coins-display {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    background: rgba(0,0,0,0.4);
+    padding: 8px;
+    border-radius: 10px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.form-group input {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid #00f0ff;
+    padding: 10px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.95rem;
+    outline: none;
+    text-align: center;
+}
+
+.auth-message {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #ff0055;
+}
+
+.lobby-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+/* BOTÕES */
+.btn {
+    background: #1e293b;
+    border: 1px solid #00f0ff;
+    color: white;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background: #00f0ff;
+    color: #000;
+    box-shadow: 0 0 15px #00f0ff;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #00f0ff, #7000ff);
+    border: none;
+}
+
+.btn-danger {
+    border-color: #ff0055;
+    color: #ff0055;
+}
+
+.btn-danger:hover {
+    background: #ff0055;
+    color: #fff;
+    box-shadow: 0 0 15px #ff0055;
+}
+
+.btn-secondary {
+    margin-top: 12px;
+    width: 100%;
+}
+
+.danger-text {
+    color: #ff0055;
+    text-shadow: 0 0 10px #ff0055;
+}
+
+
+/* GRIDS, RANKING E GUIA DE INFO */
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+    max-height: 270px;
+    overflow-y: auto;
+}
+
+.item-card {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.item-card.equipped {
+    border-color: #00ff66;
+    box-shadow: 0 0 10px #00ff66;
+}
+
+.item-card.hacker {
+    border-color: #00ff66;
+    box-shadow: 0 0 15px #00ff66;
+    background: rgba(0, 20, 10, 0.9);
+}
+
+.item-preview {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.rank-container {
+    max-height: 240px;
+    overflow-y: auto;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rank-item {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid #334155;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rank-item.top-1 {
+    border-color: #ffd700;
+    box-shadow: 0 0 8px #ffd700;
+}
+
+
+/* GUIA DE INFORMAÇÕES */
+.info-scroll-container {
+    max-height: 280px;
+    overflow-y: auto;
+    text-align: left;
+    margin-top: 10px;
+    padding-right: 5px;
+}
+
+.info-section {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid #334155;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.info-section h3 {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.info-list {
+    list-style: none;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+
+/* CARDS DE UPGRADE */
+#cards-container {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.card {
+    background: #1e293b;
+    border: 1px solid #00f0ff;
+    padding: 10px;
+    border-radius: 10px;
+    width: 120px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.card.active-card {
+    border-color: #ff00aa;
+    box-shadow: 0 0 10px #ff00aa;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+#passives-count-label {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+
+/* CONTROLES MOBILE */
+#touch-controls {
+    display: none;
+    position: absolute;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    height: 150px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.joystick-base {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    width: 85px;
+    height: 85px;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid #00f0ff;
+    border-radius: 50%;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+.joystick-stick {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 42px;
+    height: 42px;
+    background: #00f0ff;
+    border-radius: 50%;
+}
+
+#fire-btn,
+#ability-btn,
+#active-skill-1-btn,
+#active-skill-2-btn,
+#switch-btn {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    pointer-events: auto;
+}
+
+#fire-btn {
+    right: 15px;
+    bottom: 20px;
+    background: rgba(255, 0, 85, 0.6);
+    width: 60px;
+    height: 60px;
+}
+
+#ability-btn {
+    right: 80px;
+    bottom: 20px;
+    background: rgba(0, 240, 255, 0.6);
+}
+
+#active-skill-1-btn {
+    right: 135px;
+    bottom: 20px;
+    background: rgba(255, 0, 170, 0.6);
+}
+
+#active-skill-2-btn {
+    right: 190px;
+    bottom: 20px;
+    background: rgba(168, 85, 247, 0.6);
+}
+
+#switch-btn {
+    right: 245px;
+    bottom: 20px;
+    background: rgba(255, 230, 0, 0.6);
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+}
+
+
+/* RESPONSIVIDADE */
+@media (pointer: coarse) {
+    #touch-controls {
+        display: block;
+    }
+}
