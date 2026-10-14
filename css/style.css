@@ -33,7 +33,6 @@ canvas {
     display: none !important;
 }
 
-
 /* HUD DA PARTIDA */
 #ui {
     position: absolute;
@@ -79,7 +78,6 @@ canvas {
     font-weight: bold;
 }
 
-
 /* HUD DO BOSS */
 #boss-hud {
     position: absolute;
@@ -117,7 +115,6 @@ canvas {
     background: linear-gradient(90deg, #ff0055, #ff00aa);
     transition: width 0.1s linear;
 }
-
 
 /* OVERLAYS E LOBBY */
 .overlay {
@@ -193,7 +190,6 @@ canvas {
     gap: 8px;
 }
 
-
 /* BOTÕES */
 .btn {
     background: #1e293b;
@@ -238,7 +234,6 @@ canvas {
     color: #ff0055;
     text-shadow: 0 0 10px #ff0055;
 }
-
 
 /* GRIDS, RANKING E GUIA DE INFO */
 .shop-grid {
@@ -303,7 +298,6 @@ canvas {
     box-shadow: 0 0 8px #ffd700;
 }
 
-
 /* GUIA DE INFORMAÇÕES */
 .info-scroll-container {
     max-height: 280px;
@@ -333,7 +327,6 @@ canvas {
     flex-direction: column;
     gap: 6px;
 }
-
 
 /* CARDS DE UPGRADE */
 #cards-container {
@@ -369,97 +362,120 @@ canvas {
     margin-top: 4px;
 }
 
-
-/* CONTROLES MOBILE */
+/* CONTROLES MOBILE BASE */
 #touch-controls {
     display: none;
     position: absolute;
-    bottom: 15px;
+    bottom: 0;
     left: 0;
     right: 0;
-    height: 150px;
+    height: 100%;
     pointer-events: none;
-    z-index: 10;
+    z-index: 30;
 }
 
-.joystick-base {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
-    width: 85px;
-    height: 85px;
-    background: rgba(255,255,255,0.1);
-    border: 2px solid #00f0ff;
-    border-radius: 50%;
-    pointer-events: auto;
-    touch-action: none;
-}
-
-.joystick-stick {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 42px;
-    height: 42px;
-    background: #00f0ff;
-    border-radius: 50%;
-}
-
-#fire-btn,
-#ability-btn,
-#active-skill-1-btn,
-#active-skill-2-btn,
-#switch-btn {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2rem;
-    pointer-events: auto;
-}
-
-#fire-btn {
-    right: 15px;
-    bottom: 20px;
-    background: rgba(255, 0, 85, 0.6);
-    width: 60px;
-    height: 60px;
-}
-
-#ability-btn {
-    right: 80px;
-    bottom: 20px;
-    background: rgba(0, 240, 255, 0.6);
-}
-
-#active-skill-1-btn {
-    right: 135px;
-    bottom: 20px;
-    background: rgba(255, 0, 170, 0.6);
-}
-
-#active-skill-2-btn {
-    right: 190px;
-    bottom: 20px;
-    background: rgba(168, 85, 247, 0.6);
-}
-
-#switch-btn {
-    right: 245px;
-    bottom: 20px;
-    background: rgba(255, 230, 0, 0.6);
-    width: 40px;
-    height: 40px;
-    font-size: 0.9rem;
-}
-
-
-/* RESPONSIVIDADE */
-@media (pointer: coarse) {
+/* AJUSTES RESPONSIVOS EXCLUSIVOS PARA MOBILE */
+@media (max-width: 768px) or (pointer: coarse) {
     #touch-controls {
-        display: block;
+        display: block !important;
+    }
+
+    #ui {
+        font-size: 0.68rem;
+        gap: 3px;
+    }
+    
+    .stat-box {
+        padding: 4px 6px;
+    }
+
+    /* Joystick de movimento */
+    .joystick-base {
+        position: absolute;
+        bottom: 25px;
+        left: 20px;
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid #00f0ff;
+        border-radius: 50%;
+        pointer-events: auto;
+        touch-action: none;
+    }
+
+    .joystick-stick {
+        position: absolute;
+        top: 25px;
+        left: 25px;
+        width: 50px;
+        height: 50px;
+        background: #00f0ff;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #00f0ff;
+    }
+
+    /* Botões posicionados estrategicamente para toque rápido */
+    #fire-btn,
+    #ability-btn,
+    #active-skill-1-btn,
+    #active-skill-2-btn,
+    #switch-btn {
+        position: absolute;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        pointer-events: auto;
+        touch-action: none;
+    }
+
+    #fire-btn {
+        right: 20px;
+        bottom: 30px;
+        width: 65px;
+        height: 65px;
+        font-size: 1.5rem;
+        background: rgba(255, 0, 85, 0.7);
+        border: 2px solid #ff0055;
+    }
+
+    #ability-btn {
+        right: 95px;
+        bottom: 25px;
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        background: rgba(0, 240, 255, 0.7);
+        border: 2px solid #00f0ff;
+    }
+
+    #active-skill-1-btn {
+        right: 90px;
+        bottom: 85px;
+        width: 48px;
+        height: 48px;
+        font-size: 1.1rem;
+        background: rgba(255, 0, 170, 0.7);
+        border: 2px solid #ff00aa;
+    }
+
+    #active-skill-2-btn {
+        right: 35px;
+        bottom: 105px;
+        width: 48px;
+        height: 48px;
+        font-size: 1.1rem;
+        background: rgba(168, 85, 247, 0.7);
+        border: 2px solid #a855f7;
+    }
+
+    #switch-btn {
+        right: 155px;
+        bottom: 25px;
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+        background: rgba(255, 230, 0, 0.7);
+        border: 2px solid #ffe600;
     }
 }

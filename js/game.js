@@ -1,3 +1,4 @@
+// --- CONFIGURAÇÃO E CONEXÃO FIREBASE ---
 const firebaseConfig = {
   apiKey: "AIzaSyAouoqMYHeOxNonsvOvkKthEGEQuXq8QvA",
   authDomain: "neon-strike018.firebaseapp.com",
@@ -14,7 +15,7 @@ if (!firebase.apps.length) {
 }
 const db = firebase.database();
 
-// Função 1: Salva uma nova pontuação no Firebase
+// Salva pontuação no banco do Firebase
 function saveScore(playerName, score) {
     if (!playerName) playerName = "Anónimo";
     
@@ -25,30 +26,36 @@ function saveScore(playerName, score) {
     });
 }
 
-// Função 2: Atualiza a lista na tela automaticamente quando entra uma nova pontuação
+// Atualiza a interface do ranking via Firebase em tempo real
 function listenToLeaderboard() {
-    db.ref('leaderboard').orderByChild('score').limitToLast(5).on('value', (snapshot) => {
-        const scoresList = document.getElementById('scoresList');
-        if (!scoresList) return;
+    db.ref('leaderboard').orderByChild('score').limitToLast(10).on('value', (snapshot) => {
+        const container = document.getElementById('rank-list');
+        if (!container) return;
         
-        scoresList.innerHTML = '';
+        container.innerHTML = '';
         const scores = [];
         
         snapshot.forEach((child) => {
             scores.push(child.val());
         });
         
-        scores.reverse(); // Maior pontuação primeiro
+        scores.reverse(); // Maior pontuação em primeiro
 
-        scores.forEach((entry) => {
-            const li = document.createElement('li');
-            li.textContent = `${entry.name}: ${entry.score} pts`;
-            scoresList.appendChild(li);
+        if (scores.length === 0) {
+            container.innerHTML = '<p>Nenhum recorde ainda!</p>';
+            return;
+        }
+
+        scores.forEach((r, idx) => {
+            const item = document.createElement('div');
+            item.className = `rank-item ${idx === 0 ? 'top-1' : ''}`;
+            item.innerHTML = `<span>#${idx + 1} <strong>${r.name.toUpperCase()}</strong></span><span style="color:#00f0ff">${r.score} pts</span>`;
+            container.appendChild(item);
         });
     });
 }
 
-// Ativa a escuta do ranking
+// Inicia escuta do ranking
 listenToLeaderboard();
 
 //----------------------------------------------------------------
@@ -104,21 +111,11 @@ const INGAME_UPGRADES = [
 
 const ENEMY_COLOR_TIERS = ['#ff0055', '#a855f7', '#f97316', '#eab308', '#06b6d4', '#10b981'];
 
-// PERSISTÊNCIA
+// PERSISTÊNCIA LOCAL DAS CONTAS
 let accounts = JSON.parse(localStorage.getItem('ns_accounts')) || {};
-let rankings = JSON.parse(localStorage.getItem('ns_rankings')) || [];
 let currentUser = null;
 
 function saveAccounts() { localStorage.setItem('ns_accounts', JSON.stringify(accounts)); }
-function saveRankings() { localStorage.setItem('ns_rankings', JSON.stringify(rankings)); }
-
-function updateLeaderboard(username, highScore) {
-    const existing = rankings.find(r => r.name === username);
-    if (existing) { if (highScore > existing.score) existing.score = highScore; }
-    else rankings.push({ name: username, score: highScore });
-    rankings.sort((a, b) => b.score - a.score);
-    saveRankings();
-}
 
 // ESTADO DO JOGO
 let player, bullets, enemies, particles, floatTexts, activeBoss = null;
@@ -158,7 +155,7 @@ class Player {
         this.activeBeam = false;
         this.abilityTimer = 0;
         this.abilityCooldown = 0;
-        this.pendingHeroCooldown = 0; // Armazena a recarga até a habilidade acabar
+        this.pendingHeroCooldown = 0;
 
         // Habilidades Ativas da Partida (E / R)
         this.skill1Cooldown = 0;
@@ -266,38 +263,35 @@ class Player {
             this.angle = Math.atan2(mouse.y - this.y, mouse.x - this.x);
         }
 
-        // --- DURAÇÃO E RECARGA DA SKIN (Q) ---
         if (this.abilityTimer > 0) {
             this.abilityTimer -= 1/60;
             if (this.abilityTimer <= 0) {
                 this.isInvincible = false;
                 this.isUnderground = false;
                 this.activeBeam = false;
-                this.abilityCooldown = this.pendingHeroCooldown; // RECARGA INICIA APENAS AGORA!
+                this.abilityCooldown = this.pendingHeroCooldown;
             }
         } else if (this.abilityCooldown > 0) {
             this.abilityCooldown -= 1/60;
         }
 
-        // --- DURAÇÃO E RECARGA SLOT 1 (E) ---
         if (this.activeSkill1Timer > 0) {
             this.activeSkill1Timer -= 1/60;
             if (this.activeSkill1Timer <= 0) {
                 if (activeSkillSlot1?.id === 'spin_shot') this.isSpinning = false;
                 if (activeSkillSlot1?.id === 'confuse') this.isInvisibleConfuse = false;
-                this.skill1Cooldown = 10; // RECARGA INICIA APENAS AGORA!
+                this.skill1Cooldown = 10;
             }
         } else if (this.skill1Cooldown > 0) {
             this.skill1Cooldown -= 1/60;
         }
 
-        // --- DURAÇÃO E RECARGA SLOT 2 (R) ---
         if (this.activeSkill2Timer > 0) {
             this.activeSkill2Timer -= 1/60;
             if (this.activeSkill2Timer <= 0) {
                 if (activeSkillSlot2?.id === 'spin_shot') this.isSpinning = false;
                 if (activeSkillSlot2?.id === 'confuse') this.isInvisibleConfuse = false;
-                this.skill2Cooldown = 10; // RECARGA INICIA APENAS AGORA!
+                this.skill2Cooldown = 10;
             }
         } else if (this.skill2Cooldown > 0) {
             this.skill2Cooldown -= 1/60;
@@ -718,7 +712,9 @@ function gameLoop() {
                     currentUser.coins += sessionCoins;
                     if (score > currentUser.highScore) currentUser.highScore = score;
                     saveAccounts();
-                    updateLeaderboard(currentUser.username, currentUser.highScore);
+
+                    // Salva a pontuação no banco global do Firebase
+                    saveScore(currentUser.username, score);
 
                     document.getElementById('final-score').innerText = score;
                     document.getElementById('earned-coins').innerText = `${sessionCoins} 🪙`;
@@ -871,20 +867,6 @@ function renderItemsShop() {
     });
 }
 
-function renderRankings() {
-    const container = document.getElementById('rank-list');
-    container.innerHTML = '';
-
-    if (rankings.length === 0) { container.innerHTML = '<p>Nenhum recorde ainda!</p>'; return; }
-
-    rankings.slice(0, 10).forEach((r, idx) => {
-        const item = document.createElement('div');
-        item.className = `rank-item ${idx === 0 ? 'top-1' : ''}`;
-        item.innerHTML = `<span>#${idx + 1} <strong>${r.name.toUpperCase()}</strong></span><span style="color:#00f0ff">${r.score} pts</span>`;
-        container.appendChild(item);
-    });
-}
-
 document.getElementById('start-game-btn').onclick = startMatch;
 document.getElementById('open-skins-btn').onclick = () => { renderSkinsShop(); document.getElementById('skins-modal').classList.remove('hidden'); };
 document.getElementById('close-skins-btn').onclick = () => document.getElementById('skins-modal').classList.add('hidden');
@@ -895,7 +877,7 @@ document.getElementById('close-shop-btn').onclick = () => document.getElementByI
 document.getElementById('open-info-btn').onclick = () => document.getElementById('info-modal').classList.remove('hidden');
 document.getElementById('close-info-btn').onclick = () => document.getElementById('info-modal').classList.add('hidden');
 
-document.getElementById('open-rank-btn').onclick = () => { renderRankings(); document.getElementById('rank-modal').classList.remove('hidden'); };
+document.getElementById('open-rank-btn').onclick = () => { document.getElementById('rank-modal').classList.remove('hidden'); };
 document.getElementById('close-rank-btn').onclick = () => document.getElementById('rank-modal').classList.add('hidden');
 
 document.getElementById('lobby-return-btn').onclick = () => {
